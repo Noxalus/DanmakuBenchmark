@@ -61,7 +61,7 @@ namespace Danmaku
         {
             readonly float4 _v0, _v1, _v2, _v3;
 
-            public Quad(float2 center, float size, int bulletTypeIndex)
+            public Quad(float2 center, float size, float rotation, int bulletTypeIndex)
             {
                 var uvOffset = math.float2(
                     (float)(bulletTypeIndex % BULLETS_PER_ROW),
@@ -72,6 +72,12 @@ namespace Danmaku
                 _v1 = math.float4(center.x + size, center.y + size, 1 + uvOffset.x, 1 + uvOffset.y);
                 _v2 = math.float4(center.x + size, center.y - size, 1 + uvOffset.x, 0 + uvOffset.y);
                 _v3 = math.float4(center.x - size, center.y - size, 0 + uvOffset.x, 0 + uvOffset.y);
+
+                // Rotate vertices
+                _v0.xy = MathHelper.RotatePoint(_v0.xy, math.degrees(rotation) - 90f, center);
+                _v1.xy = MathHelper.RotatePoint(_v1.xy, math.degrees(rotation) - 90f, center);
+                _v2.xy = MathHelper.RotatePoint(_v2.xy, math.degrees(rotation) - 90f, center);
+                _v3.xy = MathHelper.RotatePoint(_v3.xy, math.degrees(rotation) - 90f, center);
             }
         }
 
@@ -92,7 +98,7 @@ namespace Danmaku
 
             public void Execute(int i)
             {
-                _output[i] = new Quad(_bullets[i].Position, _size, _bullets[i].BulletTypeIndex);
+                _output[i] = new Quad(_bullets[i].Position, _size, _bullets[i].Rotation, _bullets[i].BulletTypeIndex);
             }
         }
 

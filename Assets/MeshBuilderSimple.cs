@@ -34,11 +34,18 @@ namespace Danmaku
 
             for (var i = 0; i < bullets.Length; i++)
             {
-                var position = bullets[i].Position;
+                var position = new Vector3(bullets[i].Position.x, bullets[i].Position.y, 0f);
+
                 _vertices.Add(new Vector3(position.x - size, position.y - size, 0));
                 _vertices.Add(new Vector3(position.x - size, position.y + size, 0));
                 _vertices.Add(new Vector3(position.x + size, position.y + size, 0));
                 _vertices.Add(new Vector3(position.x + size, position.y - size, 0));
+
+                // Rotate vertices
+                for (int j = _vertices.Count - 4; j < _vertices.Count; j++)
+                {
+                    _vertices[j] = MathHelper.RotatePoint(_vertices[j], (bullets[i].Rotation * Mathf.Rad2Deg) - 90f, position);
+                }
             }
 
             // UV
