@@ -1,11 +1,10 @@
 using UnityEngine;
 
-namespace Danmaku {
-
-sealed class AppConfig : MonoBehaviour
+namespace Danmaku
 {
-    void Start()
-      => Application.targetFrameRate = 60;
-}
+    sealed class AppConfig : MonoBehaviour
+    {
+        void Start() => Application.targetFrameRate = 120;
+    }
 
 } // namespace Danmaku

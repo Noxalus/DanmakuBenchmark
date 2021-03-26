@@ -18,3 +18,9 @@ Desktop.ini
 /Logs
 /Temp
 /UserSettings
+
+bin
+obj
+Builds
+
+.vs*
