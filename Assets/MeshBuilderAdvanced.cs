@@ -7,12 +7,13 @@ using Unity.Mathematics;
 
 namespace Danmaku
 {
-
     //
     // Danmaku mesh builder with the advanced mesh API & C# job system
     //
     static class MeshBuilderAdvanced
     {
+        const int BULLETS_PER_ROW = 4;
+
         public static void Build(NativeSlice<Bullet> bullets, float size, Mesh mesh)
         {
             var bulletCount = bullets.Length;
@@ -22,7 +23,6 @@ namespace Danmaku
 
             // Vertex/index buffer allocation
             var varray = new NativeArray<Quad>(bulletCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
-
             var iarray = new NativeArray<uint>(vertexCount, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
 
             // Vertex/index array construction
@@ -61,12 +61,17 @@ namespace Danmaku
         {
             readonly float4 _v0, _v1, _v2, _v3;
 
-            public Quad(float2 center, float size)
+            public Quad(float2 center, float size, int bulletTypeIndex)
             {
-                _v0 = math.float4(center.x - size, center.y + size, 0, 1);
-                _v1 = math.float4(center.x + size, center.y + size, 1, 1);
-                _v2 = math.float4(center.x + size, center.y - size, 1, 0);
-                _v3 = math.float4(center.x - size, center.y - size, 0, 0);
+                var uvOffset = math.float2(
+                    (float)(bulletTypeIndex % BULLETS_PER_ROW),
+                    (BULLETS_PER_ROW - 1) - (int)(bulletTypeIndex / BULLETS_PER_ROW)
+                );
+
+                _v0 = math.float4(center.x - size, center.y + size, 0 + uvOffset.x, 1 + uvOffset.y);
+                _v1 = math.float4(center.x + size, center.y + size, 1 + uvOffset.x, 1 + uvOffset.y);
+                _v2 = math.float4(center.x + size, center.y - size, 1 + uvOffset.x, 0 + uvOffset.y);
+                _v3 = math.float4(center.x - size, center.y - size, 0 + uvOffset.x, 0 + uvOffset.y);
             }
         }
 
@@ -87,7 +92,7 @@ namespace Danmaku
 
             public void Execute(int i)
             {
-                _output[i] = new Quad(_bullets[i].Position, _size);
+                _output[i] = new Quad(_bullets[i].Position, _size, _bullets[i].BulletTypeIndex);
             }
         }
 
