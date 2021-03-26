@@ -92,8 +92,14 @@ namespace Danmaku
             var actives = _info[0].ActiveCount;
             var spawns = math.min(_bullets.Length - actives, _count);
 
+            var hash = new Klak.Math.XXHash((uint)seed);
+
             for (var i = 0; i < spawns; i++)
-                _bullets[actives + i] = Bullet.Spawn(_position, seed + i);
+            {
+                var bulletTypeIndex = hash.Int(0, 6, 0u);
+                
+                _bullets[actives + i] = Bullet.Spawn(_position, seed + i, bulletTypeIndex);
+            }
 
             _info[0] = BulletGroupInfo.AddActiveAndSpawnCount(_info[0], spawns);
         }

@@ -9,22 +9,26 @@ namespace Danmaku
     struct Bullet
     {
         public float2 Position { get; private set; }
-        public float2 Direction { get; private set; }
+        public float2 Direction => math.float2(math.cos(Rotation), math.sin(Rotation));
         public float Speed { get; private set; }
+        public float Rotation { get; private set; }
+        public int BulletTypeIndex { get; private set; }
 
-        public Bullet(float2 position, float2 direction, float speed)
+        public Bullet(float2 position, float rotation, float speed, int bulletTypeIndex = 0)
         {
             Position = position;
-            Direction = direction;
+            Rotation = rotation;
             Speed = speed;
+            BulletTypeIndex = bulletTypeIndex;
         }
 
-        public static Bullet Spawn(float2 position, int seed)
+        public static Bullet Spawn(float2 position, int seed, int bulletTypeIndex = 0)
         {
             var hash = new Klak.Math.XXHash((uint)seed);
-            var angle = hash.Float(math.PI * 2, 0u);
+            var rotation = hash.Float(math.PI * 2, 0u);
             var speed = hash.Float(0.1f, 1f, 1u);
-            return new Bullet(position, math.float2(math.cos(angle), math.sin(angle)), speed);
+
+            return new Bullet(position, rotation, speed, bulletTypeIndex);
         }
 
         public Bullet NextFrame(float delta)
@@ -34,7 +38,7 @@ namespace Danmaku
 
             Position = newPosition;
             Speed = newSpeed;
-            Direction = Direction;
+            Rotation = Rotation;
 
             return this;
         }
