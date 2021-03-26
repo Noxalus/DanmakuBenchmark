@@ -19,6 +19,7 @@ namespace Danmaku
         [SerializeField] Material _material = null;
         [SerializeField] float _bulletSize = 0.02f;
         [SerializeField] UnityEngine.UI.Text _uiText = null;
+        [SerializeField] float _spawnFrequency = 1f;
 
         #endregion
 
@@ -38,6 +39,7 @@ namespace Danmaku
         Mesh _mesh;
 
         private float _deltaTime = 0.0f;
+        private float _spawnFrequencyCounter = 0f;
 
         #endregion
 
@@ -93,7 +95,15 @@ namespace Danmaku
             // Bullet update job chain
             var handle = new BulletUpdateJob(_bullets, dt).Schedule(ActiveBulletCount, 64);
             handle = new BulletSweepJob(_bullets, _info, aspect).Schedule(handle);
-            handle = new BulletSpawnJob(_bullets, _info, pos, spawn).Schedule(handle);
+
+            _spawnFrequencyCounter += Time.deltaTime;
+
+            //if (_spawnFrequencyCounter > _spawnFrequency)
+            {
+                _spawnFrequencyCounter = 0;
+                handle = new BulletSpawnJob(_bullets, _info, pos, spawn).Schedule(handle);
+            }
+
             handle.Complete();
 
             // Mesh construction

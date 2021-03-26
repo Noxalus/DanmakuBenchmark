@@ -26,7 +26,7 @@ namespace Danmaku
         {
             var hash = new Klak.Math.XXHash((uint)seed);
             var rotation = hash.Float(math.PI * 2, 0u);
-            var speed = hash.Float(0.1f, 1f, 1u);
+            var speed = hash.Float(0.1f, 0.5f, 1u);
 
             return new Bullet(position, rotation, speed, bulletTypeIndex);
         }
@@ -34,10 +34,9 @@ namespace Danmaku
         public Bullet NextFrame(float delta)
         {
             var newPosition = Position + Direction * Speed * delta;
-            var newSpeed = Speed > 0 ? Speed - 1f * delta : 0f;
 
             Position = newPosition;
-            Speed = newSpeed;
+            Speed = Speed;
             Rotation = Rotation;
 
             return this;
